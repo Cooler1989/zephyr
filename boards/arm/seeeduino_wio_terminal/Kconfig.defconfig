@@ -1,0 +1,8 @@
+# Seeedunio WIO Terminal board configuration
+
+# Copyright (c) 2020 Google LLC.
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD
+	default "seeeduino_wio_terminal"
+	depends on BOARD_SEEEDUINO_WIO_TERMINAL
