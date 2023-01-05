@@ -155,6 +155,9 @@ arduino_serial: &usart6 {};
 		     &sdmmc2_d2_pb3 &sdmmc2_d3_pb4
 		     &sdmmc2_ck_pd6 &sdmmc2_cmd_pd7>;
 	pinctrl-names = "default";
+        bus-width = <4>;
+	dmas = <&dma1 5 5 0x0000>;
+	dma-names = "tx_rx";
 	cd-gpios = <&gpioi 15 GPIO_ACTIVE_LOW>;
 };
 
