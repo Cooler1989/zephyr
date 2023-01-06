@@ -1,0 +1,115 @@
+/*
+ * Copyright (c) 2020 Google LLC.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+#include <atmel/samd5xx19.dtsi>
+#include "seeeduino_wio_terminal-pinctrl.dtsi"
+
+/ {
+	model = "WIO Terminal";
+	compatible = "seeedstudio,seeeduino-wio";
+
+	chosen {
+		zephyr,console = &sercom4;
+		zephyr,shell-uart = &sercom4;
+		zephyr,sram = &sram0;
+		zephyr,flash = &flash0;
+		zephyr,code-partition = &code_partition;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		led: led_0 {
+			gpios = <&porta 15 0>;
+			label = "LED";
+		};
+	};
+
+	/* These aliases are provided for compatibility with samples */
+	aliases {
+		led0 = &led;
+	};
+};
+
+&cpu0 {
+	clock-frequency = <120000000>;
+};
+
+&sercom0 {
+	status = "okay";
+	compatible = "atmel,sam0-spi";
+	dipo = <1>;
+	dopo = <1>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+};
+
+&sercom4 {
+	status = "okay";
+	compatible = "atmel,sam0-uart";
+	current-speed = <115200>;
+	rxpo = <1>;
+	txpo = <0>;
+
+	pinctrl-0 = <&sercom4_uart_default>;
+	pinctrl-names = "default";
+};
+
+/*
+ * &sercom4 {
+ * 	status = "okay";
+ * 	compatible = "atmel,sam0-uart";
+ * 	current-speed = <115200>;
+ * 	rxpo = <1>;
+ * 	txpo = <0>;
+ *
+ * 	pinctrl-0 = <&pb9d_sercom4_pad1 &pb8d_sercom4_pad0>;
+ * };
+ *
+ * &sercom2 {
+ * 	status = "okay";
+ * 	compatible = "atmel,sam0-i2c";
+ * 	clock-frequency = <I2C_BITRATE_FAST>;
+ * 	#address-cells = <1>;
+ * 	#size-cells = <0>;
+ * };
+*/
+
+zephyr_udc0: &usb0 {
+	status = "okay";
+
+	pinctrl-0 = <&usb_dc_default>;
+	pinctrl-names = "default";
+};
+
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		boot_partition: partition@0 {
+			label = "uf2";
+			reg = <0x00000000 DT_SIZE_K(16)>;
+			read-only;
+		};
+
+		code_partition: partition@4000 {
+			label = "code";
+			reg = <0x4000 DT_SIZE_K(512-16-16)>;
+			read-only;
+		};
+
+		/*
+		 * The final 16 KiB is reserved for the application.
+		 * Storage partition may be used by FCB or LittleFS.
+		 */
+		storage_partition: partition@7c000 {
+			label = "storage";
+			reg = <0x0007c000 DT_SIZE_K(16)>;
+		};
+	};
+};
